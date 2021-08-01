@@ -1,4 +1,4 @@
-package com.example.elastic.concurrency.internal
+package com.example.elastic.concurrency.lib
 
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse

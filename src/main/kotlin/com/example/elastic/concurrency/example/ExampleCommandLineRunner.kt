@@ -2,7 +2,7 @@ package com.example.elastic.concurrency.example
 
 import com.example.elastic.concurrency.example.Utils.idUnderTest
 import com.example.elastic.concurrency.example.Utils.objectMapper
-import com.example.elastic.concurrency.internal.ConcurrentIndexerBuilder
+import com.example.elastic.concurrency.lib.ConcurrentIndexerBuilder
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions

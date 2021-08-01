@@ -2,7 +2,7 @@ package com.example.elastic.concurrency.example
 
 import com.example.elastic.concurrency.example.Utils.idUnderTest
 import com.example.elastic.concurrency.example.Utils.objectMapper
-import com.example.elastic.concurrency.internal.ConcurrentIndexerBuilder
+import com.example.elastic.concurrency.lib.ConcurrentIndexerBuilder
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.slf4j.LoggerFactory
 import kotlin.random.Random

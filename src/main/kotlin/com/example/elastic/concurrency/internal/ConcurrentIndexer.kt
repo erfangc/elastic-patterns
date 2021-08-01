@@ -1,0 +1,79 @@
+package com.example.elastic.concurrency.internal
+
+import org.elasticsearch.ElasticsearchException
+import org.elasticsearch.action.DocWriteResponse
+import org.elasticsearch.action.get.GetRequest
+import org.elasticsearch.action.index.IndexRequest
+import org.elasticsearch.client.RequestOptions
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.common.xcontent.XContentType
+import org.elasticsearch.rest.RestStatus
+import org.slf4j.LoggerFactory
+
+class ConcurrentIndexer(
+    private val es: RestHighLevelClient,
+    private val index: String,
+    private val id: String,
+) {
+
+    private val log = LoggerFactory.getLogger(ConcurrentIndexer::class.java)
+
+    fun update(maxAttempts: Int, next: (current: String) -> String) {
+        updateWithRetryInternal(
+            attempt = 1,
+            maxAttempts = maxAttempts,
+            next = next,
+        )
+    }
+
+    private fun updateWithRetryInternal(
+        attempt: Int,
+        maxAttempts: Int,
+        next: (currentVersion: String) -> String
+    ) {
+        /*
+        get the currentVersion
+         */
+        val get = es.get(GetRequest(index).id(id), RequestOptions.DEFAULT)
+        val seqNo = get.seqNo
+        val primaryTerm = get.primaryTerm
+
+        /*
+        Attempt to index
+         */
+        try {
+            log.info("Updating document /$index/$id attempt=$attempt")
+            val nextSource = next.invoke(get.sourceAsString)
+            val indexResponse = es.index(
+                IndexRequest(index)
+                    .id(id)
+                    .source(nextSource, XContentType.JSON)
+                    .setIfSeqNo(seqNo)
+                    .setIfPrimaryTerm(primaryTerm),
+                RequestOptions.DEFAULT
+            )
+
+            if (indexResponse.result == DocWriteResponse.Result.UPDATED) {
+                log.info("Updated document /$index/$id attempt=$attempt")
+            } else {
+                throw RuntimeException("Unable to update document $id in index $index result=${indexResponse.result}")
+            }
+
+        } catch (ex: ElasticsearchException) {
+            if (ex.status() == RestStatus.CONFLICT) {
+                if (attempt >= maxAttempts) {
+                    throw RuntimeException("Unable to update document $id in index $index after $attempt attempts")
+                } else {
+                    log.info("Conflict detected while updating id=$id index=$index on attempt=$attempt")
+                    // recurse
+                    updateWithRetryInternal(
+                        attempt = attempt + 1,
+                        maxAttempts = maxAttempts,
+                        next = next,
+                    )
+                }
+            }
+        }
+    }
+
+}

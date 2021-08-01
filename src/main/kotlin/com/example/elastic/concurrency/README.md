@@ -30,3 +30,10 @@ indexerBuilder
 
 Whereas ordinary updates on Elasticsearch passes in a single value,
 the `update()` function accepts a function called `next`, which has the signature `(current: String) -> String`
+
+The `next` function can be invoked repeatedly to build the most correct up-to-date snapshot if a previous attempt
+to update the index fails
+
+When an update fails due to a conflict on the server (i.e. someone else modified the document in-between the time
+you started to process your change and when you attempted to save) the library will encounter a `CONFLICT` HTTP status code.
+Internally the library will invoke `next` again with the most recent copy of the document to produce the next attempt

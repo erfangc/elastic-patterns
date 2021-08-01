@@ -1,4 +1,4 @@
-package com.example.elastic.concurrency
+package com.example.elastic.concurrency.example
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

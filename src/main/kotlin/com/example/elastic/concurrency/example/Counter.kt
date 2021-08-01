@@ -1,4 +1,4 @@
-package com.example.elastic.concurrency
+package com.example.elastic.concurrency.example
 
 import java.time.Instant
 

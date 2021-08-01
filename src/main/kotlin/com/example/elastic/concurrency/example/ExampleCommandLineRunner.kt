@@ -1,7 +1,7 @@
-package com.example.elastic.concurrency
+package com.example.elastic.concurrency.example
 
-import com.example.elastic.concurrency.Utils.idUnderTest
-import com.example.elastic.concurrency.Utils.objectMapper
+import com.example.elastic.concurrency.example.Utils.idUnderTest
+import com.example.elastic.concurrency.example.Utils.objectMapper
 import com.example.elastic.concurrency.internal.ConcurrentIndexerBuilder
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.action.index.IndexRequest
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 
 @Service
-class Demo(private val es: RestHighLevelClient) : CommandLineRunner {
+class ExampleCommandLineRunner(private val es: RestHighLevelClient) : CommandLineRunner {
 
     private val executor = Executors.newFixedThreadPool(2)
-    private val log = LoggerFactory.getLogger(Demo::class.java)
+    private val log = LoggerFactory.getLogger(ExampleCommandLineRunner::class.java)
 
     override fun run(vararg args: String?) {
         val indexerBuilder = ConcurrentIndexerBuilder(es)

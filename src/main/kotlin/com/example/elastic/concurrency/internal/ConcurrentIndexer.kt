@@ -26,6 +26,17 @@ class ConcurrentIndexer(
         )
     }
 
+    /**
+     * Attempt to update a given document using a callback function. The parameter to the callback function
+     * is the existing copy of this document as retrieved from the database
+     *
+     * This function will use Optimistic Locking to prevent overwrite of more recent data. The function provided here
+     * i.e. [next] will be invoked repeatedly if writes are dirty
+     *
+     * @param attempt the current attempt in the recursion
+     * @param maxAttempts maximum attempts to try before giving up
+     * @param next the function that produces the next version of the object we wish to update
+     */
     private fun updateWithRetryInternal(
         attempt: Int,
         maxAttempts: Int,

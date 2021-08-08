@@ -13,7 +13,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 
-@Service
+//@Service
 class ExampleCommandLineRunner(private val es: RestHighLevelClient) : CommandLineRunner {
 
     private val executor = Executors.newFixedThreadPool(2)
